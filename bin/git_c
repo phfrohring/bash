@@ -1,0 +1,75 @@
+#! "$__interpreter"
+
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v2.0. If a copy of the MPL was not distributed with this file, You can obtain one
+# at http://mozilla.org/MPL/2.0/.
+#
+# Copyright (c) 2018-2019 Contributors as noted in the AUTHORS file.
+
+
+cmd='source "$__install_dir"/lib/bash_utils.sh >/dev/null'
+if ! eval "$cmd"; then
+    echo "${BASH_SOURCE[0]} cmd failed. cmd: $cmd" >&2
+    exit 1
+fi
+
+
+ut::p::setup
+
+
+documentation=$(cat <<'EOF'
+
+Description
+
+    what
+    ----
+
+    $ git_c "my commit message"
+
+    is equivalent to:
+
+    $ git add .; git commit -am "my commit message"
+
+
+    why
+    ---
+
+    Repetitive.
+
+
+Example
+
+    $ git_c "my commit message"
+
+
+Input
+
+    $ git_c $commit_msg
+
+      where:
+
+        $commit_msg : commit message.
+
+
+Output
+
+    None
+
+
+Side effects
+
+    Commit on the current branch.
+
+EOF
+)
+
+
+if [[ "$#" -ne 1 ]]; then
+    ut::p::err "expected: 1 argument\n  received: $# argument(s)"
+    ut::p::err_exit "documentation: $documentation"
+fi
+
+
+message="$1"
+git add .
+git commit -am "$message"

@@ -1,0 +1,63 @@
+#! "$__interpreter"
+
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v2.0. If a copy of the MPL was not distributed with this file, You can obtain one
+# at http://mozilla.org/MPL/2.0/.
+#
+# Copyright (c) 2018-2019 Contributors as noted in the AUTHORS file.
+
+source "$__install_dir"/lib/bash_utils.sh >/dev/null
+
+
+documentation=$(cat <<'EOF'
+Description:
+    Compress a file or archive a directory and compress it.
+
+
+Example:
+    compress ./somefile
+    ./somefile.xz
+
+    compress ./somedir
+    ./somedir.tar.xz
+
+    compress ./somefile /some/dir
+    /some/dir/somefile.xz
+
+
+Input:
+    compress file [directory]
+
+
+Output:
+    A file path
+
+
+Side effects:
+    Creates file|directory where specified.
+
+
+EOF
+)
+
+
+ut::p::setup
+
+
+uncompressed_file_path="${1%/}"
+ut::p::no_exists_err "$uncompressed_file_path"
+
+
+if [[ -f "$uncompressed_file_path" ]]; then
+    compressed_file_path="$uncompressed_file_path.xz"
+    xz --stdout "$uncompressed_file_path" > "$compressed_file_path"
+fi
+
+
+if [[ -d "$uncompressed_file_path" ]]; then
+    compressed_file_path="$uncompressed_file_path.tar.xz"
+    tar -cJf "$compressed_file_path" "$uncompressed_file_path"
+fi
+
+
+echo "$compressed_file_path"

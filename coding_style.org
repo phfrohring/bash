@@ -1,0 +1,66 @@
+Shell should only be used for small utilities or simple wrapper scripts.
+
+Executables must start with ~#! /usr/bin/env bash~
+
+Executables should have no extension
+
+Do not use unset variable: ~set -u (avoid rm -rf "$DIRECTORY/*" ⇒ rm -rf "/*" )~
+
+All error messages should go to ~STDERR~.
+
+Start each file with a description of its contents.
+
+It should be possible for someone else to learn how to use your program or to use a
+function in your library by reading the comments (and self-help, if provided)
+without reading the code.
+
+~TODO(mrmonkey): Handle the unlikely edge cases (bug ####)~
+
+Prefer ~"${var}"~ over ~"$var"~
+
+~[[ … ]]~ is preferred
+
+#+begin_src sh
+# Single function
+my_func() {
+  …
+}
+
+# Part of a package
+mypackage::my_func() {
+  …
+}
+#+end_src
+
+Use readonly on variable that need to be… only read.
+
+Always check return values and give informative return values.
+
+For unpiped commands, use ~$?~ or check directly via an ~if~.
+
+Bash also has the ~PIPESTATUS~ variable that allows checking of the return code from
+all parts of a pipe. If it's only necessary to check success or failure of the
+whole pipe, then the following is acceptable:
+
+#+begin_src sh
+tar -cf - ./* | ( cd "${dir}" && tar -xf - )
+if [[ "${PIPESTATUS[0]}" -ne 0 || "${PIPESTATUS[1]}" -ne 0 ]]; then
+  echo "Unable to tar files to ${dir}" >&2
+fi
+#+end_src
+
+However, as ~PIPESTATUS~ will be overwritten as soon as you do any other command, if
+you need to act differently on errors based on where it happened in the pipe,
+you'll need to assign ~PIPESTATUS~ to another variable immediately after running the
+command (don't forget that ~[~ is a command and will wipe out ~PIPESTATUS~).
+
+#+begin_src sh
+tar -cf - ./* | ( cd "${DIR}" && tar -xf - )
+return_codes=(${PIPESTATUS[*]})
+if [[ "${return_codes[0]}" -ne 0 ]]; then
+  do_something
+fi
+if [[ "${return_codes[1]}" -ne 0 ]]; then
+  do_something_else
+fi
+#+end_src

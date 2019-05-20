@@ -1,0 +1,94 @@
+#! "$__interpreter"
+
+: '"$__interpreter" is to be replaced by the interpreter of choice.
+   It s done by the install script.
+   This is what make scripts using this model portable accross interpreters:
+   interpreters can be specified at install time.'
+
+
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v2.0. If a copy of the MPL was not distributed with this file, You can obtain one
+# at http://mozilla.org/MPL/2.0/.
+#
+# Copyright (c) 2018-2019 Contributors as noted in the AUTHORS file.
+
+
+cmd='source "$__install_dir"/lib/bash_utils.sh >/dev/null'
+if ! eval "$cmd"; then
+    echo "${BASH_SOURCE[0]} cmd failed. cmd: $cmd" >&2
+    exit 1
+fi
+: '"$__install_dir" is to be replaced by the install directory of choice.
+   It s done by the install script.
+   This is what make scripts using this model portable accross filessyems:
+   the install directory can be specified at install time.'
+
+
+: '
+when: undefined variable is used
+then: fails
+
+when: a command fails
+then: stop executing the script
+      display an error on stderr
+      display the date
+      display the path of the script
+      display the line number that failed
+      display the line that failed
+'
+ut::p::setup
+
+
+documentation=$(cat <<'EOF'
+
+Description
+
+    what
+    ----
+
+    □
+
+
+    why
+    ---
+
+    □
+
+
+Example
+
+    □
+
+
+Input
+
+    □
+
+
+Output
+
+    □
+
+
+Side effects
+
+    □
+EOF
+)
+
+
+ut::p::on_exit () {
+    echo "${FUNCNAME[0]} I'm run after exit. Clean things here like build directories."
+}
+
+
+: 'Will output these lines on stderr:
+
+   error
+     date: 2019-05-25T12:01:31+0200
+     script_path: /home/phf/bash/bin/test_script
+     line: 91
+     command: false
+
+   Then: exits the script and run ut::p::on_exit.'
+false

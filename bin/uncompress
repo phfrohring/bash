@@ -1,0 +1,83 @@
+#! "$__interpreter"
+
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v2.0. If a copy of the MPL was not distributed with this file, You can obtain one
+# at http://mozilla.org/MPL/2.0/.
+#
+# Copyright (c) 2018-2019 Contributors as noted in the AUTHORS file.
+
+
+cmd='source "$__install_dir"/lib/bash_utils.sh >/dev/null'
+eval "$cmd"
+if [[ "$?" -ne 0 ]]; then
+    echo "$BASH_SOURCE cmd failed. cmd: $cmd" >&2
+    exit 1
+fi
+
+
+ut::p::setup
+
+
+documentation=$(cat <<'EOF'
+Description:
+    Uncompress a file and extract archives, regardless of its extensions.
+
+
+Example:
+    uncompress ./somefile.bz2
+    ./somefile
+
+    uncompress ./somearchive.tar.xz
+    ./somearchive
+
+    uncompress ./somearchive.tar.xz /some/dir
+    /some/dir/somearchive
+
+
+Input:
+    uncompress file [directory]
+
+
+Output:
+    A file|directory path
+
+
+Side effects:
+    Creates file|directory where specified.
+
+
+EOF
+)
+
+
+compressed_file_path="$1"
+compressed_file_dir=$(dirname "$compressed_file_path")
+compressed_file_name=$(basename "$compressed_file_path")
+
+
+case "$compressed_file_name" in
+    *.bz2) compressed_file_extension=".bz2" ;;
+    *.xz)  compressed_file_extension=".xz" ;;
+    *.gz)  compressed_file_extension=".gz" ;;
+    *.tar) compressed_file_extension=".tar" ;;
+    *.zip) compressed_file_extension=".zip" ;;
+    *)     compressed_file_extension="" ;;
+esac
+
+
+uncompressed_file_dir="${2:-$compressed_file_dir}"
+uncompressed_file_name="${compressed_file_name%$compressed_file_extension}"
+uncompressed_file_path="${uncompressed_file_dir}/${uncompressed_file_name}"
+
+
+case "$compressed_file_extension" in
+    .bz2) cmd="bzcat $compressed_file_path > $uncompressed_file_path; $BASH_SOURCE $uncompressed_file_path" ;;
+    .xz)  cmd="xz --decompress --stdout $compressed_file_path > $uncompressed_file_path; $BASH_SOURCE $uncompressed_file_path" ;;
+    .gz)  cmd="gzip --decompress --stdout $compressed_file_path > $uncompressed_file_path; $BASH_SOURCE $uncompressed_file_path" ;;
+    .tar) cmd="tar xf $compressed_file_path -C $uncompressed_file_dir; $BASH_SOURCE $uncompressed_file_path" ;;
+    .zip) cmd="unzip $compressed_file_path -d $uncompressed_file_path; $BASH_SOURCE $uncompressed_file_path" ;;
+    *)    cmd="echo $uncompressed_file_path" ;;
+esac
+
+
+eval "$cmd"

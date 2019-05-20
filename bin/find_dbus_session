@@ -1,0 +1,77 @@
+#! "$__interpreter"
+
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v2.0. If a copy of the MPL was not distributed with this file, You can obtain one
+# at http://mozilla.org/MPL/2.0/.
+#
+# Copyright (c) 2018-2019 Contributors as noted in the AUTHORS file.
+
+
+cmd='source "$__install_dir"/lib/bash_utils.sh >/dev/null'
+eval "$cmd"
+if [[ "$?" -ne 0 ]]; then
+    echo "$BASH_SOURCE cmd failed. cmd: $cmd" >&2
+    exit 1
+fi
+
+
+ut::p::setup
+
+
+documentation=$(cat <<'EOF'
+Description:
+
+    Let cron use notify-send command.
+
+    By default cron does not have access to DBUS_SESSION_BUS_ADDRESS
+    but needs it to use notify-send.
+
+    This script saves DBUS_SESSION_BUS_ADDRESS to a file that can be
+    sourced in cron scripts so that DBUS_SESSION_BUS_ADDRESS is defined.
+
+    It can be executed in .bashrc safely.
+
+    Then, add these lines to a cron script:
+
+    dbus_session_bus_address_var="$HOME/bin/dbus_session_bus_address_var"
+    if [[ -r "$dbus_session_bus_address_var" ]]; then
+       source "$dbus_session_bus_address_var"
+    fi
+
+
+Example:
+
+    find_dbus_session_bus_address
+
+    find_dbus_session_bus_address doc
+      Show this documentation
+
+
+Input:
+
+    find_dbus_session_bus_address [doc]
+
+
+Output:
+
+    File path where the variable is saved.
+
+
+Side effects:
+
+     Creates file: $HOME/bin/dbus_session_bus_address_var
+
+EOF
+)
+
+
+if [[ "$#" -ne 0 ]]; then
+    ut::p::err_exit "$documentation"
+fi
+
+
+readonly xdbus_path="$HOME"/bin/dbus_session_bus_address_var
+env | grep DBUS_SESSION_BUS_ADDRESS > "$xdbus_path"
+chmod 600 "$xdbus_path"
+echo 'export DBUS_SESSION_BUS_ADDRESS' >> "$xdbus_path"
+echo "$xdbus_path"

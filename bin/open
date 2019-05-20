@@ -1,0 +1,82 @@
+#! "$__interpreter"
+
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v2.0. If a copy of the MPL was not distributed with this file, You can obtain one
+# at http://mozilla.org/MPL/2.0/.
+#
+# Copyright (c) 2018-2019 Contributors as noted in the AUTHORS file.
+
+
+cmd='source "$__install_dir"/lib/bash_utils.sh >/dev/null'
+eval "$cmd"
+if [[ "$?" -ne 0 ]]; then
+    echo "$BASH_SOURCE cmd failed. cmd: $cmd" >&2
+    exit 1
+fi
+
+
+ut::p::setup
+
+
+documentation=$(cat <<'EOF'
+
+Description
+
+    Open files depending on their extensions.
+
+
+Example
+
+    open image.jpg
+
+    open document.pdf
+
+
+Input
+
+    a file path
+
+
+Output
+
+    A string if no program is matched.
+
+
+Side effects
+
+    Starts a program to open the image if any.
+
+
+EOF
+)
+
+
+file_path="$1"
+ut::p::no_file_err "$file_path"
+
+
+case "$file_path" in
+    *.pdf)  cmd="mupdf-gl -I $file_path" ;;
+    *.ex)   cmd="ec $file_path" ;;
+    *.exs)  cmd="ec $file_path" ;;
+    *.py)   cmd="ec $file_path" ;;
+    *.txt)  cmd="ec $file_path" ;;
+    *.org)  cmd="ec $file_path" ;;
+    *.rkt)  cmd="ec $file_path" ;;
+    *.sh)   cmd="ec $file_path" ;;
+    *.jpeg) cmd="feh $file_path" ;;
+    *.jpg)  cmd="feh $file_path" ;;
+    *.png)  cmd="feh $file_path" ;;
+    *.pnm)  cmd="feh $file_path" ;;
+    *.tiff) cmd="feh $file_path" ;;
+    *.bmp)  cmd="feh $file_path" ;;
+    *.webm) cmd="vlc $file_path" ;;
+    *.mp4)  cmd="vlc $file_path" ;;
+    *.html) cmd="firefox $file_path" ;;
+    *.tcl)  cmd="/usr/bin/tclsh $file_path" ;;
+    *.drn)  cmd="/usr/bin/tclsh /home/phf/bin/drakon/drakon_editor.tcl $file_path" ;;
+    *)      cmd='echo $BASH_SOURCE: I do not know how to open $file_path' ;;
+esac
+
+
+eval "$cmd"

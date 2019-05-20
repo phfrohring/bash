@@ -1,0 +1,199 @@
+#! /usr/bin/env bash
+
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v2.0. If a copy of the MPL was not distributed with this file, You can obtain one
+# at http://mozilla.org/MPL/2.0/.
+#
+# Copyright (c) 2018-2019 Contributors as noted in the AUTHORS file.
+
+
+documentation=$(set <<'EOF'
+
+Description
+
+    Install libraries and binaries under a given directory in the host filesystem.
+
+
+    Algorithm:
+
+      assume:
+
+        ./install
+        ./lib/*
+        ./bin/*
+        ./*
+
+
+      install ~/bash /bin/bash
+
+        install_dir.path := $1
+        interpreter      := $2
+
+        this_dir.path := /path/to/this/dir
+
+        _build.path := $this_dir.path/_build
+        ./_build := { $this_dir/lib/* $this_dir/bin/* }
+
+        for each file in ./_build:
+          chmod u+x $file
+          file.interpreter := $interpreter
+          file.root_directory := $install_dir
+
+        install_dir := $install_dir U { $_build/lib/* $_build/bin/* }
+
+        if: this_dir.path/*/install
+        then: this_dir.path/*/install $install_dir.path $interpreter
+
+
+Example
+
+    # Binaries and libraries will be available in:
+    #
+    #   ~/bash/bin
+    #   ~/bash/lib
+    #
+    #
+    # First lines of scripts will be set to: #! /usr/bin/env bash
+
+    $ ./install ~/bash '/usr/bin/env bash'
+
+
+    # equivalent to $ ./install ./_build '/usr/bin/env bash'
+    # Note that installation will remove ./_build dir on exit.
+
+    $ ./install
+
+
+Input
+
+    ./install $install_dir_path $interpreter
+
+      where:
+
+        $install_dir_path : path of the directory where to install libraries
+
+        $interpreter : the interpreter
+
+
+Output
+
+    None
+
+
+Side effects
+
+    Will install all libraries and binaries under the given path.
+
+
+EOF
+             )
+
+
+set -ou >/dev/null
+
+
+err_exit() {
+
+    local script_path="${BASH_SOURCE[${#BASH_SOURCE[@]}-1]}"
+    echo "error date: $(date +'%Y-%m-%dT%H:%M:%S%z') script_path: $script_path msg: Install failed. Abort." >&2
+    exit 1
+
+}
+
+
+: 'When: exit
+   Then: clean all intermediary files.'
+on_exit() {
+    rm -r "$build_dir"
+}
+trap 'on_exit' EXIT
+
+
+: '$ ask_permission
+   => granted | denied | undefined'
+ut::p::ask_permission() {
+    read -p -r "Continue (y/n)? "
+    case "$REPLY" in
+        y|Y ) echo "granted" ;;
+        n|N ) echo "denied" ;;
+        * )   echo "undefined" ;;
+    esac
+}
+
+
+install_dir="${1:-/dev/null}"
+abs_install_dir=$(readlink -f "$install_dir") || err_exit "$LINENO"
+if [[ ! -d "$abs_install_dir" ]]; then
+    mkdir -p "$abs_install_dir" || err_exit "$LINENO"
+fi
+
+
+default_interpreter="/usr/bin/env bash"
+interpreter="${2:-$default_interpreter}"
+
+
+this_file_asb_path=$(readlink -f "${BASH_SOURCE[0]}") || err_exit "$LINENO"
+this_dir=$(dirname "$this_file_asb_path") || err_exit "$LINENO"
+
+
+build_dir="$this_dir"/_build
+[[ -d "$build_dir" ]] && rm -r "$build_dir"
+mkdir -p "$build_dir" || err_exit "$LINENO"
+
+: 'Copy files so work safely on them, not the originals.'
+program_dirs=("lib" "bin")
+for dir in "${program_dirs[@]}"; do
+    cp -r --dereference "$this_dir/$dir" "$build_dir" || err_exit "$LINENO"
+done
+to_concrete_executable() {
+
+    local file_path="$1"
+
+    chmod u+x "$file_path" || err_exit "$LINENO"
+    sed -i "s|\"\$__interpreter\"|$interpreter|g" "$file_path" || err_exit "$LINENO"
+    sed -i "s|\"\$__install_dir\"|$abs_install_dir|g" "$file_path" || err_exit "$LINENO"
+    dos2unix "$file_path" &>/dev/null
+
+}
+find "$build_dir" -type f -print0 | while IFS= read -r -d '' file; do to_concrete_executable "$file"; done
+
+
+: 'Go through all built programs and try to install them one by one.
+   In case of conflict, raise an error saying which files are in conflict.'
+for sub_dir in "${program_dirs[@]}"; do
+
+    destination_dir="$install_dir/$sub_dir"
+    if [[ ! -d "$destination_dir" ]]; then
+        mkdir -p "$destination_dir" || err_exit "$LINENO"
+    fi
+
+
+    source_dir="$build_dir/$sub_dir"
+    for src in "$source_dir"/*; do
+
+        name=$(basename "$src")
+        destination="$destination_dir/$name"
+        if [[ -e "$destination" ]]; then
+
+            echo "Cannot copy source to destination because destination exists."
+            echo "  source: $src"
+            echo "  destination: $destination"
+            err_exit "$LINENO"
+
+        else
+
+            cp -r "$src" "$destination" || err_exit "$LINENO"
+
+        fi
+
+    done
+
+done
+
+
+for sub_install in "$this_dir"/*/install; do
+
+    [[ -f "$sub_install" ]] && [[ -x "$sub_install" ]] \
+        && "$sub_install" "$abs_install_dir" "$interpreter"
+
+done
