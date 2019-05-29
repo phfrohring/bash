@@ -24,7 +24,7 @@ Example
 
     # It's now possible to call whatever utility
     # has been defined in bash_utils.sh. E.g:
-    ut::p::err "A nice error message."
+    ut::p::err "msg: A nice error message."
 
 
 EOF
@@ -56,10 +56,13 @@ ut::p::err() {
 
     ${a[${#a[@]}-1]} is equivalent to ${a[-1]} but works in bash.version < 4.0'
 
-
     local script_path="${BASH_SOURCE[${#BASH_SOURCE[@]}-1]}"
-    echo -e "error\n  date: $(date +'%Y-%m-%dT%H:%M:%S%z')\n  script_path: $script_path\n  $*" >&2
+    err_msg="error\n  date: $(date +'%Y-%m-%dT%H:%M:%S%z')\n  script_path: $script_path\n  "
+    for i in "$@"; do 
+        err_msg="${err_msg}${i}\n  "
+    done
 
+    echo -e "$err_msg"
 }
 
 
@@ -78,7 +81,7 @@ ut::p::on_error() {
 
     read -r line file <<<"$(caller)"
     culprit=$(sed "${line}q;d" "$file")
-    ut::p::err "line: $line\n  command: $culprit"
+    ut::p::err "line: $line" "command: $culprit"
     ut::p::exit_1
 }
 
@@ -119,16 +122,14 @@ ut::p::setup() {
 
 
 ut::p::err_exit() {
-    local msg="$1"
-    ut::p::err "$msg"
+    ut::p::err "$@"
     ut::p::exit_1
 }
 
 
 ut::p::err_notify_exit() {
-    local msg="$1"
-    notify-send "$msg"
-    ut::p::err_exit "$msg"
+    notify-send "$@"
+    ut::p::err_exit "$@"
 }
 
 
@@ -136,7 +137,7 @@ ut::p::err_notify_exit() {
 ut::p::no_file_err() {
     local file_path="$1"
     if [[ ! -f "$file_path" ]]; then
-        ut::p::err_exit "file_path should exit but does not. file_path: $file_path"
+        ut::p::err_exit "msg: file_path should exit but does not." "file_path: $file_path"
     fi
 }
 
@@ -144,7 +145,7 @@ ut::p::no_file_err() {
 ut::p::no_dir_err() {
     local dir_path="$1"
     if [[ ! -d "$dir_path" ]]; then
-        ut::p::err_exit "dir_path should exit but does not. dir_path: $dir_path"
+        ut::p::err_exit "msg: dir_path should exit but does not." "dir_path: $dir_path"
     fi
 }
 
@@ -152,7 +153,7 @@ ut::p::no_dir_err() {
 ut::p::no_exists_err() {
     local thing_path="$1"
     if [[ ! -e "$thing_path" ]]; then
-        ut::p::err_exit "thing_path should not exit but does. thing_path: $thing_path"
+        ut::p::err_exit "msg: thing_path should not exit but does." "thing_path: $thing_path"
     fi
 }
 
@@ -160,7 +161,7 @@ ut::p::no_exists_err() {
 ut::p::exists_err() {
     local thing_path="$1"
     if [[ -e "$thing_path" ]]; then
-        ut::p::err_exit "thing_path should not exit but does. thing_path: $thing_path"
+        ut::p::err_exit "msg: thing_path should not exit but does." "thing_path: $thing_path"
     fi
 }
 
@@ -168,7 +169,7 @@ ut::p::exists_err() {
 ut::p::dir_err() {
     local dir_path="$1"
     if [[ -d "$dir_path" ]]; then
-        ut::p::err_exit "dir_path should not exit but does. dir_path: $dir_path"
+        ut::p::err_exit "msg: dir_path should not exit but does." "dir_path: $dir_path"
     fi
 }
 
@@ -207,7 +208,7 @@ ut::p::not_sourced_err() {
     if [[ "$0" == "${BASH_SOURCE[0]}" ]]; then
         ut::p::setup
         local msg="This script should be sourced in an other script, not executed by itself. script: ${BASH_SOURCE[0]}"
-        ut::p::err_exit "$msg $documentation"
+        ut::p::err_exit "msg: $msg" "documentation: $documentation"
     fi
 }
 
