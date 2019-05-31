@@ -46,7 +46,16 @@ ut::p::steps() {
 }
 
 
+
 ut::p::err() {
+
+    :'
+
+    $ ut::p::err "msg: message" "key: val"
+
+
+
+    '
 
     : 'For each level of sourcing, a new element is added to the beginning of the
     BASH_SOURCE array, so that ${BASH_SOURCE[0]} is always the current source file
@@ -58,8 +67,8 @@ ut::p::err() {
 
     local script_path="${BASH_SOURCE[${#BASH_SOURCE[@]}-1]}"
     err_msg="error\n  date: $(date +'%Y-%m-%dT%H:%M:%S%z')\n  script_path: $script_path\n  "
-    for i in "$@"; do 
-        err_msg="${err_msg}${i}\n  "
+    for key_val in "$@"; do
+        err_msg="${err_msg}${key_val}\n  "
     done
 
     echo -e "$err_msg"
