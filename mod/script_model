@@ -85,6 +85,7 @@ ut::p::on_exit () {
 ut::p::err "msg: Example of an error message." "key: val"
 
 
+false
 : 'Will output these lines on stderr:
 
    error
@@ -94,4 +95,3 @@ ut::p::err "msg: Example of an error message." "key: val"
      command: false
 
    Then: exits the script and run ut::p::on_exit.'
-false

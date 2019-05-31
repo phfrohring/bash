@@ -49,12 +49,14 @@ ut::p::steps() {
 
 ut::p::err() {
 
-    :'
+    : '
 
     $ ut::p::err "msg: message" "key: val"
-
-
-
+      error
+        date: 2019-05-31T17:21:52+0200
+        script_path: /home/phf/bash/bin/test_script
+        msg: message
+        key: val
     '
 
     : 'For each level of sourcing, a new element is added to the beginning of the

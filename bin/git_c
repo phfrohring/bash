@@ -65,7 +65,7 @@ EOF
 
 
 if [[ "$#" -ne 1 ]]; then
-    ut::p::err "expected: 1 argument\n  received: $# argument(s)"
+    ut::p::err "expected: 1 argument" "received: $# argument(s)"
     ut::p::err_exit "documentation: $documentation"
 fi
 
