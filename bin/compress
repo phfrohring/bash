@@ -16,13 +16,13 @@ Description:
 
 Example:
     compress ./somefile
-    ./somefile.xz
+    ./somefile.lz
 
     compress ./somedir
-    ./somedir.tar.xz
+    ./somedir.tar.lz
 
     compress ./somefile /some/dir
-    /some/dir/somefile.xz
+    /some/dir/somefile.lz
 
 
 Input:
@@ -49,14 +49,14 @@ ut::p::no_exists_err "$uncompressed_file_path"
 
 
 if [[ -f "$uncompressed_file_path" ]]; then
-    compressed_file_path="$uncompressed_file_path.xz"
-    xz --stdout "$uncompressed_file_path" > "$compressed_file_path"
+    compressed_file_path="$uncompressed_file_path.lz"
+    lzip --stdout "$uncompressed_file_path" > "$compressed_file_path"
 fi
 
 
 if [[ -d "$uncompressed_file_path" ]]; then
-    compressed_file_path="$uncompressed_file_path.tar.xz"
-    tar -cJf "$compressed_file_path" "$uncompressed_file_path"
+    compressed_file_path="$uncompressed_file_path.tar.lz"
+    tar --lzip -cf "$compressed_file_path" "$uncompressed_file_path"
 fi
 
 

@@ -61,6 +61,7 @@ case "$compressed_file_name" in
     *.gz)  compressed_file_extension=".gz" ;;
     *.tar) compressed_file_extension=".tar" ;;
     *.zip) compressed_file_extension=".zip" ;;
+    *.lz)  compressed_file_extension=".lz" ;;
     *)     compressed_file_extension="" ;;
 esac
 
@@ -74,6 +75,7 @@ case "$compressed_file_extension" in
     .bz2) cmd="bzcat $compressed_file_path > $uncompressed_file_path; $BASH_SOURCE $uncompressed_file_path" ;;
     .xz)  cmd="xz --decompress --stdout $compressed_file_path > $uncompressed_file_path; $BASH_SOURCE $uncompressed_file_path" ;;
     .gz)  cmd="gzip --decompress --stdout $compressed_file_path > $uncompressed_file_path; $BASH_SOURCE $uncompressed_file_path" ;;
+    .lz)  cmd="lzip --decompress --stdout $compressed_file_path > $uncompressed_file_path; $BASH_SOURCE $uncompressed_file_path" ;;
     .tar) cmd="tar xf $compressed_file_path -C $uncompressed_file_dir; $BASH_SOURCE $uncompressed_file_path" ;;
     .zip) cmd="unzip $compressed_file_path -d $uncompressed_file_path; $BASH_SOURCE $uncompressed_file_path" ;;
     *)    cmd="echo $uncompressed_file_path" ;;
