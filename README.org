@@ -42,7 +42,7 @@
 
    Contributions are welcome.
 
-   See: [[https://rfc.zeromq.org/spec:44/C4/][Collective Code Construction Contract]]
+   See: [[https://phfrohring.com/note?id=1544733b-803b-4d57-b72f-31cb57304f8a][Collective Code Construction Contract]]
 
 
 * License
