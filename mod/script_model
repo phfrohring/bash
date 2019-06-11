@@ -43,14 +43,14 @@ documentation=$(cat <<'EOF'
 
 description
 
-  short description
-  =================
+  short
+  =====
 
   Computes the sum of its inputs.
 
 
-  detailed description
-  ====================
+  detailed
+  ========
 
   x : int
   y : int
