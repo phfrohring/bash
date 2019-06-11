@@ -41,38 +41,30 @@ ut::p::setup
 
 documentation=$(cat <<'EOF'
 
-Description
+description
 
-    what
-    ----
+  short description
+  =================
 
-    □
-
-
-    why
-    ---
-
-    □
+  Computes the sum of its inputs.
 
 
-Example
+  detailed description
+  ====================
 
-    □
-
-
-Input
-
-    □
-
-
-Output
-
-    □
+  x : int
+  y : int
+  --------- z := add x y
+  z = x + y
 
 
-Side effects
+example
 
-    □
+  $ z=$(add 1 2)
+  $ echo $z
+  3
+
+
 EOF
 )
 

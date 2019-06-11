@@ -72,6 +72,8 @@ case "$file_path" in
     *.bmp)  cmd="feh $file_path" ;;
     *.webm) cmd="vlc $file_path" ;;
     *.mp4)  cmd="vlc $file_path" ;;
+    *.doc)  cmd="libreoffice $file_path" ;;
+    *.docx) cmd="libreoffice $file_path" ;;
     *.html) cmd="firefox $file_path" ;;
     *.tcl)  cmd="/usr/bin/tclsh $file_path" ;;
     *.drn)  cmd="/usr/bin/tclsh /home/phf/bin/drakon/drakon_editor.tcl $file_path" ;;
