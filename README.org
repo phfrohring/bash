@@ -8,13 +8,13 @@
 
   Scripts written using these [[file:mod/][models]]:
 
-    - fails as soon as a command fails to guard against failure escalation
+    - fail as soon as a command fails to guard against failure escalation
     - print error messages telling what went wrong, in which script, when and the
       command that failed to help identify problems.
     - offer a way to step trough commands
     - they prevent undefined variables to be used to guard against things like ~rm -r
       $undefined/~ getting understood by ~bash~ as: ~rm -r /~
-    - clean the state of the program after exit and even after an error
+    - offer a way to clean the state of the program after exit and even after an error
     - are relocatable i.e. independent from a given filesystem i.e. you can install
       them anywhere
     - interpreter can be specified at install time which makes them usable on more
