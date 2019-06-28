@@ -224,6 +224,18 @@ ut::p::not_sourced_err() {
 }
 
 
+ut::p::box_comment() {
+    local marker="*"
+    local msg="$marker $1 $marker"
+    local length="${#msg}"
+    local line=$(head -c "$length" < /dev/zero | tr '\0' "$marker")
+
+    echo "$line"
+    echo "$msg"
+    echo "$line"
+}
+
+
 ut::p::list_system_config() {
     lsb_release -a
     uname -arv
