@@ -72,6 +72,7 @@ case "$file_path" in
     *.bmp)  cmd="feh $file_path" ;;
     *.webm) cmd="vlc $file_path" ;;
     *.mp4)  cmd="vlc $file_path" ;;
+    *.ps)   cmd="evince $file_path" ;;
     *.doc)  cmd="libreoffice $file_path" ;;
     *.docx) cmd="libreoffice $file_path" ;;
     *.html) cmd="firefox $file_path" ;;
