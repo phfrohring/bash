@@ -236,6 +236,22 @@ ut::p::box_comment() {
 }
 
 
+ut::p::debug_comment() {
+    local msg="$1"
+    if [[ __debug == "true" ]]; then
+        echo "$msg"
+    fi
+}
+
+
+ut::p::debug_box_comment() {
+    local msg="$1"
+    if [[ __debug == "true" ]]; then
+        ut::p::box_comment "$msg"
+    fi
+}
+
+
 ut::p::list_system_config() {
     lsb_release -a
     uname -arv
