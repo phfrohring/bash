@@ -39,6 +39,24 @@ then: stop executing the script
 ut::p::setup
 
 
+comment() {
+    if [[ "$__debug" == "true" ]]; then
+        local msg="$1"
+        ut::p::debug_comment "$msg"
+    fi
+}
+
+
+step() {
+    if [[ "$__debug" == "true" ]]; then
+        echo ""
+        local msg="$1"
+        ut::p::debug_box_comment "$msg"
+        echo ""
+    fi
+}
+
+
 : 'Useful with ut::p::debug_comment functions'
 __debug=''
 
