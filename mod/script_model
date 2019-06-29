@@ -43,28 +43,28 @@ documentation=$(cat <<'EOF'
 
 description
 
-  short
-  =====
-
   Computes the sum of its inputs.
 
 
-  detailed
-  ========
+  details
+  =======
 
+  □
   x : int
   y : int
-  --------- z := add x y
-  z = x + y
+  ------- add
+  z : int
+
+  where:
+    z = □ + x + y
+    □ : needs to be filled up
 
 
 example
 
-  $ z=$(add 1 2)
+  $ z=$(add □ 1 2)
   $ echo $z
-  3
-
-
+  □
 EOF
 )
 
