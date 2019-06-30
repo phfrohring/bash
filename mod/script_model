@@ -97,8 +97,9 @@ ut::p::on_exit () {
     echo "${FUNCNAME[0]} I'm run after exit. Clean things here like build directories."
 }
 
+
 nb_args=3
-if [[ "$#" -eq "$nb_args" ]]; then
+if [[ "$#" -ne "$nb_args" ]]; then
     ut::p::err_exit "expected: $nb_args arguments" \
                     "received: $# arguments" \
                     "documentation: $documentation"
