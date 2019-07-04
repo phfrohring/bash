@@ -45,7 +45,7 @@ __debug=''
 
 comment() {
     if [[ "$__debug" == "true" ]]; then
-        local msg="$1"
+        local msg="$@"
         ut::p::debug_comment "$msg"
     fi
 }
@@ -54,7 +54,7 @@ comment() {
 step() {
     if [[ "$__debug" == "true" ]]; then
         echo ""
-        local msg="$1"
+        local msg="$@"
         ut::p::debug_box_comment "$msg"
         echo ""
     fi
@@ -96,6 +96,16 @@ EOF
 ut::p::on_exit () {
     echo "${FUNCNAME[0]} I'm run after exit. Clean things here like build directories."
 }
+
+
+
+
+step "Executing: ${BASH_SOURCE[0]}"
+
+
+
+
+step "Read inputs."
 
 
 nb_args=3

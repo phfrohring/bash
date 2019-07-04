@@ -164,7 +164,7 @@ ut::p::no_dir_err() {
 ut::p::no_exists_err() {
     local thing_path="$1"
     if [[ ! -e "$thing_path" ]]; then
-        ut::p::err_exit "msg: thing_path should not exit but does." "thing_path: $thing_path"
+        ut::p::err_exit "msg: thing_path should exit but does not." "thing_path: $thing_path"
     fi
 }
 
