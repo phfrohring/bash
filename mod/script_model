@@ -40,13 +40,14 @@ ut::p::setup
 
 
 : 'Useful with ut::p::debug_comment functions'
-__debug=''
+__debug='true'
 
 
 comment() {
     if [[ "$__debug" == "true" ]]; then
         local msg="$@"
         ut::p::debug_comment "$msg"
+        echo ""
     fi
 }
 
