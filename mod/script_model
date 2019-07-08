@@ -104,6 +104,9 @@ ut::p::on_exit () {
 step "Executing: ${BASH_SOURCE[0]}"
 
 
+comment "documentation: $documentation"
+
+
 
 
 step "Read inputs."

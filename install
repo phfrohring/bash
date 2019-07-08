@@ -152,7 +152,7 @@ to_concrete_executable() {
     chmod u+x "$file_path" || err_exit "$LINENO"
     sed -i "s|\"\$__interpreter\"|$interpreter|g" "$file_path" || err_exit "$LINENO"
     sed -i "s|\"\$__install_dir\"|$abs_install_dir|g" "$file_path" || err_exit "$LINENO"
-    dos2unix "$file_path" &>/dev/null
+    dos2unix "$file_path" >/dev/null 2>&1
 
 }
 find "$build_dir" -type f -print0 | while IFS= read -r -d '' file; do to_concrete_executable "$file"; done
