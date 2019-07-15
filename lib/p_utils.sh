@@ -236,18 +236,48 @@ ut::p::box_comment() {
 }
 
 
-ut::p::debug_comment() {
-    local msg="$1"
-    if [[ "$__debug" == "true" ]]; then
-        echo "$msg"
-    fi
-}
-
-
 ut::p::debug_box_comment() {
     local msg="$1"
     if [[ "$__debug" == "true" ]]; then
         ut::p::box_comment "$msg"
+    fi
+}
+
+
+ut::p::debug_comment() {
+    if [[ "$__debug" == "true" ]]; then
+        local msg="$@"
+        echo "$msg"
+        echo ""
+    fi
+}
+
+
+ut::p::debug_var() {
+    if [[ "$__debug" == "true" ]]; then
+
+        if [[ "$#" -ne 1 ]]; then
+            ut::p::err_exit "expected: 1 arguments" \
+                            "received: $# arguments" \
+                            "function: ${FUNCNAME[0]}"
+        fi
+
+        local var="${1}"
+        local value="$(eval echo \${${var}})"
+        echo "${var}: ${value}"
+        echo ""
+
+    fi
+}
+
+
+
+ut::p::debug_step() {
+    if [[ "$__debug" == "true" ]]; then
+        echo ""
+        local msg="$@"
+        ut::p::debug_box_comment "$msg"
+        echo ""
     fi
 }
 
